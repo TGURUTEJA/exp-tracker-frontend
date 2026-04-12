@@ -1,5 +1,5 @@
 'use client';
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { RegisterUser } from "../../../actions/AuthActions";
 import { LoginResponse, RegisterResquest } from "../../../types/loginResponse";
 import {  useMutation } from "@tanstack/react-query";
@@ -7,11 +7,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 
 
-type Props = {
-  setIsLogin: Dispatch<SetStateAction<boolean>>;
-};
-
-export default function RegisterForm({ setIsLogin }: Props) {
+export default function RegisterForm() {
   // Keep form inputs largely uncontrolled; control only what’s needed
   const router = useRouter();
   const dispatch = useDispatch();
@@ -95,9 +91,8 @@ export default function RegisterForm({ setIsLogin }: Props) {
       }
       console.log("Test"+serverErrors["userName"]);
       setErrors(serverErrors);
-    } catch (err) {
+    } catch {
       setErrors({ _global: "Unexpected error. Please try again." });
-      // optionally log err to monitoring
     }
   };
 

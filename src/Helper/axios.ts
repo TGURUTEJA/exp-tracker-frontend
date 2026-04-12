@@ -49,7 +49,7 @@ const addUnauthorizedInterceptor = (instance: AxiosInstance) => {
       if (status === 500) {
         if (typeof payload === "string") {
           alert(`Server Error: ${payload}`);
-        } else if (payload && (payload as any).errorMessage) {
+        } else if (payload && typeof payload === "object" && "errorMessage" in payload) {
           return Promise.reject(payload);
         }
       }

@@ -1,73 +1,93 @@
 
 import { AuthJWTResponseFilter, AuthResponseFilter } from "../Helper/AuthHelper";
+import type { LoginResponse } from "../types/loginResponse";
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface ApiOptions {
-  body?: Record<string, any>;
-  authToken?: string | null;    // for bearer token flows
-  withCredentials?: boolean;    // for cookie/session flows
+  body?: unknown;
+  authToken?: string | null;
+  withCredentials?: boolean;
 }
 
-export function customAuthApiCall(
+type DefaultApiResult = LoginResponse | string;
+
+export async function customAuthApiCall<T = DefaultApiResult>(
   url: string,
   method: HttpMethod,
   optionsInput: ApiOptions = {}
-): Promise<any> {
-  const { body, authToken, withCredentials } = optionsInput;
-  const domain = 'http://gurutth.duckdns.org:8082';
+): Promise<T> {
+  const { body, withCredentials } = optionsInput;
+  const domain = "http://localhost:8082";
   const fullUrl = `${domain}${url}`;
 
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   const fetchOptions: RequestInit = {
     method,
     headers,
-    credentials: withCredentials ? 'include' : 'same-origin',
+    credentials: withCredentials ? "include" : "same-origin",
   };
   console.log("Fetch Options:", fetchOptions);
 
-  if (body) {
+  if (body !== undefined && body !== null) {
     fetchOptions.body = JSON.stringify(body);
   }
-  return fetch(fullUrl, fetchOptions).then(async (response) => {
-    return AuthResponseFilter(response);
-  });
+  const response = await fetch(fullUrl, fetchOptions);
+  const payload = await AuthResponseFilter(response);
+  return payload as T;
 }
 
 
-export async function customApiCall(
+export async function customApiCall<T = DefaultApiResult>(
   url: string,
   method: HttpMethod,
   optionsInput: ApiOptions = {}
-): Promise<any> {
+): Promise<T> {
+
   const { body } = optionsInput;
-  const domain = 'http://gurutth.duckdns.org:8080';
+  const domain = "http://localhost:8080";
   const fullUrl = `${domain}${url}`;
+
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
+
   const fetchOptions: RequestInit = {
     method,
     headers,
-    credentials: 'include',
+    credentials: "include",
   };
-  if (body) {
+
+  if (body !== undefined && body !== null) {
     fetchOptions.body = JSON.stringify(body);
   }
-  if(typeof window == "undefined"){
+
+  if (typeof window === "undefined") {
     const { cookies } = await import("next/headers");
-    const cookieStore = cookies();
-    (fetchOptions.headers as any).cookie = cookieStore.toString();
-    console.log("inServer",url,(await cookieStore).toString())
-    return fetch(fullUrl, fetchOptions).then(async (response) => {
-    return AuthJWTResponseFilter(response);
-  });
+
+    const cookieStore = await cookies();
+    const cookieString = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+
+    if (cookieString) {
+      (fetchOptions.headers as Record<string, string>)["cookie"] = cookieString;
+    }
+
+    console.log("Server Request:", url, cookieString);
+
+    const response = await fetch(fullUrl, fetchOptions);
+    const payload = await AuthJWTResponseFilter(response);
+    return payload as T;
   }
-  console.log(url,fetchOptions)
-  return fetch(fullUrl, fetchOptions).then(async (response) => {
-  return AuthJWTResponseFilter(response);;
-  });
+
+  console.log("Client Request:", url);
+
+  const response = await fetch(fullUrl, fetchOptions);
+  const payload = await AuthJWTResponseFilter(response);
+  return payload as T;
 }

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { VerifyEmail } from "@/actions/AuthActions";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { LoginResponse } from "@/types/loginResponse";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";

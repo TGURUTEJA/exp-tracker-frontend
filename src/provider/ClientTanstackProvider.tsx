@@ -1,5 +1,5 @@
 'use client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import React, { FC, PropsWithChildren, useState } from 'react';
 import { getQueryClient } from './GetQueryClient';
 

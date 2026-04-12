@@ -34,7 +34,7 @@ export default function LoginForm() {
       return next;
     });
 
-  const clientSideValidation = (email:String,userName:String,password:String): Record<string, string> => {
+  const clientSideValidation = (email: string, userName: string, password: string): Record<string, string> => {
     const nextErrors: Record<string, string> = {};
     const loginValue = loginMode === "userName" ? userName : email;
     if (!loginValue) nextErrors[loginMode] = `Please enter ${loginMode}.`;

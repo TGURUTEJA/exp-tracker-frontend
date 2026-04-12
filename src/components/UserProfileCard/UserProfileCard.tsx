@@ -28,7 +28,7 @@ export default function ProfileCard() {
   }
   if(!isPending && !isError){
       UserResponse = data.data;
-      UserResponse.email = "Test@gamil.com"
+      // UserResponse.email = "Test@gami1l.com"
   }
 
   return (

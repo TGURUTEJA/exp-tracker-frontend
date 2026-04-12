@@ -15,3 +15,10 @@ export interface RegisterResquest {
     lastName?: string;
     DOB?: string;
 }
+
+/** Body for forgot-password / resend OTP (email or username). */
+export interface ForgotPasswordPayload {
+    userName: string;
+    email: string;
+    id: number | null;
+}

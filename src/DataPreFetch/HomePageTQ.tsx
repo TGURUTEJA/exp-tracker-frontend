@@ -1,4 +1,4 @@
-import { getAccountdata, getUserData } from "@/app/actions";
+import { getAccountdata } from "@/app/actions";
 import { getQueryClient } from "@/provider/GetQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
@@ -8,7 +8,7 @@ interface Props {
 
 export default async function HomePageTQ({ children }: Props) {
     const queryClient = getQueryClient();
-    const PromiseList : Promise<any>[] = [];
+    const PromiseList: Promise<unknown>[] = [];
     PromiseList.push(
         queryClient.prefetchQuery({
             queryKey: ['AccountSummary'],

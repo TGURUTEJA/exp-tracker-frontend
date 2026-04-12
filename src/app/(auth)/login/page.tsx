@@ -11,12 +11,12 @@ export default function LoginPage() {
         {isLogin ? (
           <LoginForm/>
         ) : (
-          <RegisterForm setIsLogin = {setIslogin}/>
+          <RegisterForm />
         )}
         <div className="text-gray-500">
           {isLogin ? (
             <>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 className="text-blue-500 hover:underline"
                 onClick={() => setIslogin(false)}

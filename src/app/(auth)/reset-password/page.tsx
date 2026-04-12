@@ -1,7 +1,7 @@
 'use client';
 import { ForgotPasswordRequest, ResetPassword } from "@/actions/AuthActions";
 import { RootState } from "@/store/store";
-import { LoginResponse, UserData } from "@/types/loginResponse";
+import { ForgotPasswordPayload, LoginResponse } from "@/types/loginResponse";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -14,7 +14,7 @@ export default function ResetPasswordPage() {
             mutationKey: ['forgotPassword'],
             mutationFn: (payload) => ResetPassword(payload)
     });
-    const mutanionOTP = useMutation<LoginResponse, unknown, UserData>({
+    const mutanionOTP = useMutation<LoginResponse, unknown, ForgotPasswordPayload>({
             mutationKey: ['forgotPassword'],
             mutationFn: (payload) => ForgotPasswordRequest(payload)
         });
@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
             window.location.href="/forgot-password";
         }
 
-    }, []);
+    }, [state]);
     const hanbleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = e.currentTarget;
@@ -33,6 +33,10 @@ export default function ResetPasswordPage() {
         const newPassword = String(formData.get("newPassword") || "").trim();
         const confirmPassword = String(formData.get("confirmPassword") || "").trim();
         const OTP = String(formData.get("OTP") || "").trim();
+        if (newPassword !== confirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
         const payload = {
             "newPassword": newPassword,
             "OTP": OTP,
@@ -53,7 +57,7 @@ export default function ResetPasswordPage() {
             alert("Unauthorized Access to Reset Password Page");
             window.location.href="/forgot-password";
         }
-        const payload: UserData = {
+        const payload: ForgotPasswordPayload = {
             userName: state.userName || "",
             email: state.email || "",
             id: null

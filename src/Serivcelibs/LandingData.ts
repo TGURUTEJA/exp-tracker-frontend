@@ -1,18 +1,17 @@
 import { getAccountdata, getUserData } from "@/app/actions";
-import { queryOptions, useQuery,useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
-export function getuserDatafunc() {
-    return useSuspenseQuery( queryOptions({
-    queryKey: ['dashboard'],
-    queryFn:  () => getUserData(),// disable automatic query on mount
+/** Use with `useSuspenseQuery` / `useQuery` in a component — hooks cannot run in plain functions. */
+export const dashboardUserQueryOptions = () =>
+  queryOptions({
+    queryKey: ["dashboard"],
+    queryFn: () => getUserData(),
     throwOnError: true,
-    }));
-} 
+  });
 
-export function getAccountDatafunc() {
-    return useSuspenseQuery( queryOptions({
-    queryKey: ['AccountData'],
-    queryFn:  () => getAccountdata(),// disable automatic query on mount
+export const accountDataQueryOptions = () =>
+  queryOptions({
+    queryKey: ["AccountData"],
+    queryFn: () => getAccountdata(),
     throwOnError: true,
-    }));
-}
+  });

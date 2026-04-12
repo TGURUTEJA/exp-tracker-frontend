@@ -9,9 +9,11 @@ export async function middleware(req: NextRequest) {
   }
   console.log("Middleware checking authentication for path:", pathname);
   if (!req.cookies.has("access_token")) {
-  url.pathname = "/login";
-  return NextResponse.redirect(url);
-}
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

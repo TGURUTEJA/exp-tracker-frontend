@@ -1,8 +1,7 @@
 'use client';
 import React from "react";
-import { LoginResponse, UserData } from "@/types/loginResponse";
+import { ForgotPasswordPayload, LoginResponse } from "@/types/loginResponse";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 import { ForgotPasswordRequest } from "@/actions/AuthActions";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -10,7 +9,7 @@ import { useDispatch } from "react-redux";
 export default function ForgotPasswordPage() {
     const router = useRouter();
     const dispatch = useDispatch();
-    const mutanion = useMutation<LoginResponse, unknown, UserData>({
+    const mutanion = useMutation<LoginResponse, unknown, ForgotPasswordPayload>({
         mutationKey: ['forgotPassword'],
         mutationFn: (payload) => ForgotPasswordRequest(payload)
     });
@@ -20,7 +19,7 @@ export default function ForgotPasswordPage() {
         const form = e.currentTarget;
         const formData = new FormData(form);
         console.log("ForgotPassword form submitted", formData);
-        let payload: UserData = {
+        const payload: ForgotPasswordPayload = {
             userName: String(formData.get("userName") || "").trim(),
             email: String(formData.get("email") || "").trim(),
             id: null
