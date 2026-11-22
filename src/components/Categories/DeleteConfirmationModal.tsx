@@ -61,7 +61,7 @@ export default function DeleteConfirmationModal({
         {/* Description */}
         <div className="mb-6">
           <p className="text-slate-300 text-sm leading-relaxed">
-            Are you sure you want to delete the category <span className="font-semibold text-white">"{categoryName}"</span>?
+            Are you sure you want to delete the category <span className="font-semibold text-white">&quot;{categoryName}&quot;</span>?
           </p>
           <p className="text-red-400/80 text-xs mt-2 font-medium">
             This action cannot be undone and may affect existing transactions.
