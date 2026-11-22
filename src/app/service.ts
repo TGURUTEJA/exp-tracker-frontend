@@ -1,4 +1,3 @@
-
 import { AuthJWTResponseFilter, AuthResponseFilter } from "../Helper/AuthHelper";
 import type { LoginResponse } from "../types/loginResponse";
 
@@ -12,48 +11,82 @@ interface ApiOptions {
 
 type DefaultApiResult = LoginResponse | string;
 
+function resolveAuthBaseUrl(): string {
+  const isServer = typeof window === "undefined";
+  var authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL + ":" + process.env.AUTH_SERVER_PORT;
+  var nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
+if (isServer) {
+    return (
+      authServiceUrl ||
+      nextPublicAuthUrl ||
+      "http://localhost:8082"
+    );
+  }
+  return nextPublicAuthUrl || "http://localhost:8082";
+}
+
+function resolveAppBaseUrl(): string {
+  const isServer = typeof window === "undefined";
+  var appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL + ":" + process.env.APP_SERVER_PORT;
+  var nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
+  if (isServer) {
+    return (
+      appServiceUrl ||
+      nextPublicAppUrl ||
+      "http://localhost:8080"
+    );
+  }
+  return nextPublicAppUrl || "http://localhost:8080";
+}
+
 export async function customAuthApiCall<T = DefaultApiResult>(
   url: string,
   method: HttpMethod,
   optionsInput: ApiOptions = {}
 ): Promise<T> {
-  const { body, withCredentials } = optionsInput;
-  const domain = "http://localhost:8082";
+  const { body, authToken, withCredentials } = optionsInput;
+  const domain = resolveAuthBaseUrl();
   const fullUrl = `${domain}${url}`;
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
 
   const fetchOptions: RequestInit = {
     method,
     headers,
     credentials: withCredentials ? "include" : "same-origin",
   };
-  console.log("Fetch Options:", fetchOptions);
 
   if (body !== undefined && body !== null) {
     fetchOptions.body = JSON.stringify(body);
   }
+
   const response = await fetch(fullUrl, fetchOptions);
   const payload = await AuthResponseFilter(response);
   return payload as T;
 }
-
 
 export async function customApiCall<T = DefaultApiResult>(
   url: string,
   method: HttpMethod,
   optionsInput: ApiOptions = {}
 ): Promise<T> {
-
-  const { body } = optionsInput;
-  const domain = "http://localhost:8080";
+  const { body, authToken } = optionsInput;
+  const domain = resolveAppBaseUrl();
   const fullUrl = `${domain}${url}`;
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
 
   const fetchOptions: RequestInit = {
     method,
@@ -75,17 +108,13 @@ export async function customApiCall<T = DefaultApiResult>(
       .join("; ");
 
     if (cookieString) {
-      (fetchOptions.headers as Record<string, string>)["cookie"] = cookieString;
+      headers["cookie"] = cookieString;
     }
-
-    console.log("Server Request:", url, cookieString);
 
     const response = await fetch(fullUrl, fetchOptions);
     const payload = await AuthJWTResponseFilter(response);
     return payload as T;
   }
-
-  console.log("Client Request:", url);
 
   const response = await fetch(fullUrl, fetchOptions);
   const payload = await AuthJWTResponseFilter(response);
