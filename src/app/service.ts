@@ -13,8 +13,8 @@ type DefaultApiResult = LoginResponse | string;
 
 function resolveAuthBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  var authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL + ":" + process.env.AUTH_SERVER_PORT;
-  var nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
+  const authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL + ":" + process.env.AUTH_SERVER_PORT;
+  const nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
 if (isServer) {
     return (
       authServiceUrl ||
@@ -27,8 +27,8 @@ if (isServer) {
 
 function resolveAppBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  var appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL + ":" + process.env.APP_SERVER_PORT;
-  var nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
+  const appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL + ":" + process.env.APP_SERVER_PORT;
+  const nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
   if (isServer) {
     return (
       appServiceUrl ||

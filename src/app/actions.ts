@@ -27,7 +27,7 @@ export interface CreateCategoryPayload {
 }
 
 export async function createCategory(body: CreateCategoryPayload) {
-  return customApiCall<any>("/api/App/category/create_category", "POST", {
+  return customApiCall("/api/App/category/create_category", "POST", {
     body,
     withCredentials: true,
   });
@@ -42,14 +42,14 @@ export interface UpdateCategoryPayload {
 }
 
 export async function updateCategory(body: UpdateCategoryPayload) {
-  return customApiCall<any>("/api/App/category/update_category", "PUT", {
+  return customApiCall("/api/App/category/update_category", "PUT", {
     body,
     withCredentials: true,
   });
 }
 
 export async function deleteCategory(id: number) {
-  return customApiCall<any>(`/api/App/category/delete_category/${id}`, "DELETE", {
+  return customApiCall(`/api/App/category/delete_category/${id}`, "DELETE", {
     withCredentials: true,
   });
 }

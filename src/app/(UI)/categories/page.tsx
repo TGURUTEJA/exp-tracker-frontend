@@ -41,15 +41,15 @@ export default function CategoriesPage() {
 
     try {
       const response = await deleteCategory(Number(categoryToDelete.id));
-      if (response && response.error) {
+      if (response && (typeof response === "string" || response.error)) {
         const extracted = ErrorMessageExtractor(response);
         setErrorMsg(extracted);
       } else {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
         setCategoryToDelete(null);
       }
-    } catch (err: any) {
-      setErrorMsg(err?.message || "Failed to delete category");
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error && err.message ? err.message : "Failed to delete category");
     } finally {
       setIsDeleteLoading(false);
     }

@@ -71,7 +71,7 @@ export default function CreateCategotiesModel({ open, setOpen, onSuccess, catego
       }
       
       // If error is explicitly true or backend returned an error
-      if (response && response.error) {
+      if (response && (typeof response === "string" || response.error)) {
         const extracted = ErrorMessageExtractor(response);
         setErrorMsg(extracted);
       } else {
@@ -83,8 +83,9 @@ export default function CreateCategotiesModel({ open, setOpen, onSuccess, catego
         setOpen(false);
         if (onSuccess) onSuccess();
       }
-    } catch (err: any) {
-      setErrorMsg(err?.message || `Failed to ${categoryToEdit ? "update" : "create"} category`);
+    } catch (err: unknown) {
+      const fallbackMessage = `Failed to ${categoryToEdit ? "update" : "create"} category`;
+      setErrorMsg(err instanceof Error && err.message ? err.message : fallbackMessage);
     } finally {
       setLoading(false);
     }
