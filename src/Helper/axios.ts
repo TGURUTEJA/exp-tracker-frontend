@@ -1,25 +1,31 @@
 import axios, { AxiosInstance } from "axios";
 
 function resolveAuthBaseUrl(): string {
-  if (typeof window === "undefined") {
+  const isServer = typeof window === "undefined";
+  const authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL + ":" + process.env.AUTH_SERVER_PORT;
+  const nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
+if (isServer) {
     return (
-      process.env.AUTH_SERVICE_INTERNAL_URL ||
-      process.env.NEXT_PUBLIC_AUTH_SERVICE_URL ||
+      authServiceUrl ||
+      nextPublicAuthUrl ||
       "http://localhost:8082"
     );
   }
-  return process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || "http://localhost:8082";
+  return nextPublicAuthUrl || "http://localhost:8082";
 }
 
 function resolveAppBaseUrl(): string {
-  if (typeof window === "undefined") {
+  const isServer = typeof window === "undefined";
+  const appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL + ":" + process.env.APP_SERVER_PORT;
+  const nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
+  if (isServer) {
     return (
-      process.env.APP_SERVICE_INTERNAL_URL ||
-      process.env.NEXT_PUBLIC_APP_SERVICE_URL ||
+      appServiceUrl ||
+      nextPublicAppUrl ||
       "http://localhost:8080"
     );
   }
-  return process.env.NEXT_PUBLIC_APP_SERVICE_URL || "http://localhost:8080";
+  return nextPublicAppUrl || "http://localhost:8080";
 }
 
 // Auth service instance
