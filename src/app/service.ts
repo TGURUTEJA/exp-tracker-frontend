@@ -26,11 +26,11 @@ function resolveAuthBaseUrl(): string {
 if (isServer) {
     return (
       authServiceUrl ||
-      nextPublicAuthUrl ||
-      "http://localhost:8082"
+      nextPublicAuthUrl
     );
   }
-  return nextPublicAuthUrl || "http://localhost:8082";
+  //|| "http://localhost:8082"
+  return nextPublicAuthUrl ;
 }
 
 function resolveAppBaseUrl(): string {
@@ -48,11 +48,10 @@ function resolveAppBaseUrl(): string {
   if (isServer) {
     return (
       appServiceUrl ||
-      nextPublicAppUrl ||
-      "http://localhost:8080"
+      nextPublicAppUrl
     );
   }
-  return nextPublicAppUrl || "http://localhost:8080";
+  return nextPublicAppUrl;
 }
 
 export async function customAuthApiCall<T = DefaultApiResult>(
