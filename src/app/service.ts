@@ -13,8 +13,16 @@ type DefaultApiResult = LoginResponse | string;
 
 function resolveAuthBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  const authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL + ":" + process.env.AUTH_SERVER_PORT;
-  const nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
+  var authServiceUrl = "";
+  var nextPublicAuthUrl = "";
+  if(process.env.AUTH_SERVICE_INTERNAL_URL)
+    authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL;
+    if(process.env.AUTH_SERVER_PORT)
+      authServiceUrl += ":" + process.env.AUTH_SERVER_PORT;
+  if(process.env.NEXT_PUBLIC_AUTH_SERVICE_URL)
+    nextPublicAuthUrl = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL ;
+    if(process.env.NEXT_PUBLIC_AUTH_SERVER_PORT)
+      nextPublicAuthUrl += ":" + process.env.NEXT_PUBLIC_AUTH_SERVER_PORT;
 if (isServer) {
     return (
       authServiceUrl ||
@@ -27,8 +35,16 @@ if (isServer) {
 
 function resolveAppBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  const appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL + ":" + process.env.APP_SERVER_PORT;
-  const nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL + ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
+  var appServiceUrl = "";
+  var nextPublicAppUrl = "";
+  if(process.env.APP_SERVICE_INTERNAL_URL)
+    appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL;
+    if(process.env.APP_SERVER_PORT)
+      appServiceUrl += ":" + process.env.APP_SERVER_PORT;
+  if(process.env.NEXT_PUBLIC_APP_SERVICE_URL)
+    nextPublicAppUrl = process.env.NEXT_PUBLIC_APP_SERVICE_URL ;
+    if(process.env.NEXT_PUBLIC_APP_SERVER_PORT)
+      nextPublicAppUrl += ":" + process.env.NEXT_PUBLIC_APP_SERVER_PORT;
   if (isServer) {
     return (
       appServiceUrl ||
