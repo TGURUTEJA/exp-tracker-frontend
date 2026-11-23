@@ -2,8 +2,8 @@ import axios, { AxiosInstance } from "axios";
 
 function resolveAuthBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  var authServiceUrl = "";
-  var nextPublicAuthUrl = "";
+  let authServiceUrl = "";
+  let nextPublicAuthUrl = "";
   if(process.env.AUTH_SERVICE_INTERNAL_URL)
     authServiceUrl = process.env.AUTH_SERVICE_INTERNAL_URL;
     if(process.env.AUTH_SERVER_PORT)
@@ -24,8 +24,8 @@ if (isServer) {
 
 function resolveAppBaseUrl(): string {
   const isServer = typeof window === "undefined";
-  var appServiceUrl = "";
-  var nextPublicAppUrl = "";
+  let appServiceUrl = "";
+  let nextPublicAppUrl = "";
   if(process.env.APP_SERVICE_INTERNAL_URL)
     appServiceUrl = process.env.APP_SERVICE_INTERNAL_URL;
     if(process.env.APP_SERVER_PORT)
