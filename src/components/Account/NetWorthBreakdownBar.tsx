@@ -12,7 +12,7 @@ export default function NetWorthBreakdownBar({
   const liabilitiesPercent = total > 0 ? (liabilities / total) * 100 : 0;
 
   return (
-    <div className="mt-4 border-t border-white/10 pt-3">
+    <div className="mt-2 border-t border-white/10 pt-2">
       <div className="flex items-center justify-between gap-2 text-[11px] font-medium">
         <span className="text-emerald-300">Assets</span>
         <span className="text-rose-300">Liabilities</span>
@@ -22,9 +22,9 @@ export default function NetWorthBreakdownBar({
         aria-label={
           breakdown
             ? `Net worth is calculated from ${formatCurrency(assets)} in assets and ${formatCurrency(liabilities)} in liabilities`
-            : "Net worth is calculated as assets minus liabilities; breakdown is unavailable"
+            : "Net worth breakdown is unavailable"
         }
-        className="mt-2 flex h-2 overflow-hidden rounded-full bg-slate-800"
+        className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-slate-800"
       >
         {breakdown && (
           <>
@@ -39,13 +39,14 @@ export default function NetWorthBreakdownBar({
           </>
         )}
       </div>
-      <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-500">
-        <span>{breakdown ? formatCurrency(assets) : "Unavailable"}</span>
-        <span>{breakdown ? formatCurrency(liabilities) : "Unavailable"}</span>
+      <div className="mt-1.5 flex items-center justify-between gap-1 text-[10px]">
+        <span className="min-w-0 truncate font-semibold text-emerald-300">
+          {breakdown ? formatCurrency(assets) : "Unavailable"}
+        </span>
+        <span className="min-w-0 truncate text-right font-semibold text-rose-300">
+          {breakdown ? formatCurrency(liabilities) : "Unavailable"}
+        </span>
       </div>
-      <p className="mt-2 text-[10px] text-slate-500">
-        Net worth = assets - liabilities
-      </p>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import CategoriesTable from "@/components/Categories/CategoriesTable";
 import DeleteConfirmationModal from "@/components/Categories/DeleteConfirmationModal";
 import { deleteCategory, Category } from "@/app/actions";
 import { ErrorMessageExtractor } from "@/Helper/AuthHelper";
+import PageHeader from "@/components/UI/PageHeader";
 
 export default function CategoriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="relative w-full pb-20">
+    <div className="relative w-full pb-8">
       {/* FLOATING ERROR TOAST */}
       {errorMsg && (
         <div className="fixed top-5 right-5 z-[1000] flex items-center gap-3 bg-red-950/90 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md animate-slideInLeft max-w-sm">
@@ -72,12 +73,9 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Categories</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Organize spending into categories that make sense to you.
-        </p>
-      </header>
+      <div className="mb-3">
+        <PageHeader title="Categories" />
+      </div>
       
       {/* CATEGORIES TABLE */}
       <CategoriesTable 
@@ -94,7 +92,7 @@ export default function CategoriesPage() {
         }}
         aria-label="Add Category"
         className="
-          fixed bottom-8 right-8 z-50
+          fixed bottom-5 right-5 z-50
           flex items-center justify-center 
           bg-yellow-500 hover:bg-yellow-400 
           text-slate-950 w-14 h-14 

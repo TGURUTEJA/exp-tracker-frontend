@@ -7,6 +7,7 @@ interface PeriodBalanceDetailsProps {
   loading?: boolean;
   unavailable?: boolean;
   higherIsBetter?: boolean;
+  compact?: boolean;
 }
 
 export default function PeriodBalanceDetails({
@@ -16,6 +17,7 @@ export default function PeriodBalanceDetails({
   loading = false,
   unavailable = false,
   higherIsBetter = true,
+  compact = false,
 }: PeriodBalanceDetailsProps) {
   if (!comparison) {
     const message = loading
@@ -25,7 +27,7 @@ export default function PeriodBalanceDetails({
         : "No balance history for this period";
 
     return (
-      <p role={loading ? "status" : "note"} className="mt-4 border-t border-white/10 pt-3 text-xs text-slate-500">
+      <p role={loading ? "status" : "note"} className={`${compact ? "mt-2 pt-2" : "mt-4 pt-3"} border-t border-white/10 text-[11px] text-slate-500`}>
         {message}
       </p>
     );
@@ -39,28 +41,31 @@ export default function PeriodBalanceDetails({
         : "text-rose-300";
 
   return (
-    <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-white/10 pt-3 text-xs">
+    <dl
+      aria-label={`${periodLabel} balance comparison`}
+      className={`${compact ? "mt-2 gap-x-2 gap-y-1 pt-2" : "mt-4 gap-x-4 gap-y-2 pt-3"} grid grid-cols-2 border-t border-white/10 text-[11px]`}
+    >
       <div>
-        <dt className="text-slate-500">{periodLabel} starting balance</dt>
-        <dd className="mt-1 font-medium text-slate-200">
+        <dt className="text-slate-500">Start bal</dt>
+        <dd className={`${compact ? "mt-0 text-[11px]" : "mt-1 text-sm"} font-medium text-slate-200`}>
           {formatCurrency(comparison.start, currency)}
         </dd>
       </div>
       <div>
-        <dt className="text-slate-500">Current balance</dt>
-        <dd className="mt-1 font-medium text-slate-200">
+        <dt className="text-slate-500">{compact ? "End bal" : "Close bal"}</dt>
+        <dd className={`${compact ? "mt-0 text-[11px]" : "mt-1 text-sm"} font-medium text-slate-200`}>
           {formatCurrency(comparison.current, currency)}
         </dd>
       </div>
       <div>
-        <dt className="text-slate-500">Difference</dt>
-        <dd className={`mt-1 font-semibold ${differenceTone}`}>
+        <dt className="text-slate-500">Diff</dt>
+        <dd className={`${compact ? "mt-0 text-[11px]" : "mt-1 text-sm"} font-semibold ${differenceTone}`}>
           {formatSignedCurrency(comparison.change, currency)}
         </dd>
       </div>
       <div>
-        <dt className="text-slate-500">Change (%)</dt>
-        <dd className={`mt-1 font-semibold ${differenceTone}`}>
+        <dt className="text-slate-500">Change %</dt>
+        <dd className={`${compact ? "mt-0 text-[11px]" : "mt-1 text-sm"} font-semibold ${differenceTone}`}>
           {comparison.percentage === null
             ? "—"
             : `${comparison.percentage > 0 ? "+" : ""}${comparison.percentage.toFixed(2)}%`}

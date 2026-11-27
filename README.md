@@ -4,16 +4,23 @@ Next.js, React, and TypeScript UI for the Expense Tracker. The shared UI shell a
 
 ## Getting Started
 
-Install dependencies if needed, then run the development server:
+Install dependencies if needed, then start the development server through the repo script:
 
 ```bash
 npm install
-npm run dev
+bash ./run.sh
 ```
 
-Open [http://localhost:3030](http://localhost:3030) with your browser to see the result.
+`run.sh` loads `../.env`, which supplies the app-service URL/port and `UI_PORT`. The default local UI address is [http://localhost:3031](http://localhost:3031); a bare `npm run dev` may miss those values and break API routing.
 
 Frontend actions in `src/app/actions.ts` call the app-service; coordinate API changes with that service and the DB GraphQL contract.
+
+## Current UI shell
+
+- The top bar shows a custom calendar date button (selecting a date sets the daily filter), the search/type/period controls, and the current page name at the far right; the app name is not repeated there.
+- The home page uses accessible icon-only actions in card headings; the page name is visible only in the top bar.
+- The sidebar and top bar stay in place. At desktop widths, the home-only Net Worth status card, account carousel (about 3.5 equal-width cards visible), and Category activity share one row and the same height. Category activity shows the top four spending categories for the selected period as a list, with more horizontal space than Recent transactions. The Net Worth card shows an assets/liabilities pie and bar plus the period start/end comparison. The carousel scrollbar is hidden while horizontal scrolling remains available. In the lower dashboard, Budget progress is on the left, Recent transactions occupies the center, and the future placeholders are stacked vertically on the right. Narrower screens and other pages remain scrollable.
+- Two future cards, “Spending insights” and “Savings goals”, are reserved on the dashboard.
 
 ## Workspace notes
 

@@ -8,6 +8,7 @@ import {
   updateBudget,
 } from "@/app/actions";
 import type { BudgetPayload, BudgetRecord } from "@/types/BudgetTypes";
+import PageHeader from "@/components/UI/PageHeader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, Wallet, X } from "lucide-react";
 import Link from "next/link";
@@ -149,22 +150,18 @@ export default function BudgetsPage() {
     `Category #${categoryId}`;
 
   return (
-    <div className="space-y-6 pb-12">
-      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-medium text-yellow-400">Monthly limits</p>
-          <h1 className="mt-1 text-3xl font-bold text-white">Budgets</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Set a monthly spending limit per category. Progress shows up on your dashboard.
-          </p>
-        </div>
-        <Link
-          href="/categories"
-          className="text-sm font-semibold text-yellow-300 underline-offset-4 hover:underline"
-        >
-          Manage categories
-        </Link>
-      </header>
+    <div className="space-y-3 pb-3">
+      <PageHeader
+        title="Budgets"
+        actions={
+          <Link
+            href="/categories"
+            className="text-xs font-semibold text-yellow-300 underline-offset-4 hover:underline"
+          >
+            Manage categories
+          </Link>
+        }
+      />
 
       {(errorMessage || successMessage) && (
         <div
@@ -191,19 +188,19 @@ export default function BudgetsPage() {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <section className="min-w-0 space-y-4">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <section className="min-w-0 space-y-3">
           {budgetsQuery.isPending ? (
             <div
               role="status"
-              className="rounded-2xl border border-white/10 bg-[#0b1220] p-8 text-center text-sm text-slate-400"
+              className="rounded-xl border border-white/10 bg-[#0b1220] p-5 text-center text-sm text-slate-400"
             >
               Loading budgets…
             </div>
           ) : budgetsQuery.isError ? (
             <div
               role="alert"
-              className="flex items-center justify-between gap-4 rounded-2xl border border-red-500/20 bg-red-950/30 p-5 text-sm text-red-200"
+              className="flex items-center justify-between gap-4 rounded-xl border border-red-500/20 bg-red-950/30 p-5 text-sm text-red-200"
             >
               <span>
                 {budgetsQuery.error.message || "Could not load budgets."}
@@ -217,7 +214,7 @@ export default function BudgetsPage() {
               </button>
             </div>
           ) : sortedBudgets.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1220] p-10 text-center">
+            <div className="rounded-xl border border-dashed border-white/15 bg-[#0b1220] p-6 text-center">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-300">
                 <Wallet size={20} />
               </span>
@@ -227,7 +224,7 @@ export default function BudgetsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220]">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1220]">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[620px] text-left text-sm">
                   <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
@@ -242,16 +239,16 @@ export default function BudgetsPage() {
                   <tbody className="divide-y divide-white/5">
                     {sortedBudgets.map((budget) => (
                       <tr key={budget.id} className="text-slate-300">
-                        <td className="px-4 py-4 font-medium text-white">
+                        <td className="px-3 py-2.5 font-medium text-white">
                           {categoryName(budget.categoryId)}
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-3 py-2.5">
                           {MONTHS[(budget.month - 1 + 12) % 12]} {budget.year}
                         </td>
-                        <td className="px-4 py-4 text-right font-semibold text-slate-200">
+                        <td className="px-3 py-2.5 text-right font-semibold text-slate-200">
                           {formatCurrency(budget.amount)}
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-3 py-2.5">
                           <span
                             className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
                               budget.isActive === false
@@ -262,7 +259,7 @@ export default function BudgetsPage() {
                             {budget.isActive === false ? "Paused" : "Active"}
                           </span>
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-3 py-2.5">
                           <div className="flex justify-end gap-2">
                             <button
                               type="button"
@@ -291,8 +288,8 @@ export default function BudgetsPage() {
           )}
         </section>
 
-        <section className="h-fit rounded-2xl border border-white/10 bg-[#0b1220] p-5">
-          <div className="mb-5 flex items-center gap-2">
+        <section className="h-fit rounded-xl border border-white/10 bg-[#0b1220] p-4">
+          <div className="mb-3 flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-400/10 text-yellow-300">
               {editingId ? <Pencil size={18} /> : <Plus size={19} />}
             </span>
@@ -319,7 +316,7 @@ export default function BudgetsPage() {
             </div>
           ) : null}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <label className="block text-xs text-slate-400">
               Category
               <select

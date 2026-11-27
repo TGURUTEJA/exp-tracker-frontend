@@ -14,11 +14,8 @@ import Link from "next/link";
 import type { AccountTransaction } from "@/types/TransactionTypes";
 import { useDashboardFilters } from "@/context/DashboardFiltersContext";
 import PeriodBalanceDetails from "./PeriodBalanceDetails";
-import NetWorthBreakdownBar from "./NetWorthBreakdownBar";
 import {
   getAccountTypeComparison,
-  getNetWorthBreakdown,
-  getNetWorthComparison,
   getPeriodWindow,
   type BalanceComparison,
 } from "./periodBalance";
@@ -50,7 +47,7 @@ const ACCOUNT_TYPE_ADD_LABELS: Record<AccountType, string> = {
   FRIEND: "Add friend account",
 };
 
-export default function AccountSummary() {
+export default function AccountSummary({ className = "" }: { className?: string }) {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createAccountType, setCreateAccountType] = useState<AccountType>();
   const queryClient = useQueryClient();
@@ -75,12 +72,6 @@ export default function AccountSummary() {
   });
   const transactions = transactionQuery.data ?? [];
   const periodWindow = getPeriodWindow(period, dailyRange);
-  const netWorthComparison =
-    details.length > 0 && !transactionQuery.isPending && !transactionQuery.isError
-      ? getNetWorthComparison(details, transactions, periodWindow)
-      : null;
-  const netWorthBreakdown =
-    details.length > 0 ? getNetWorthBreakdown(details) : null;
   const comparisonLoading = isPending || transactionQuery.isPending;
   const responseMessage = response?.message?.toLowerCase() ?? "";
   const noAccounts =
@@ -122,7 +113,7 @@ export default function AccountSummary() {
       element.removeEventListener("scroll", updateScrollHint);
       window.removeEventListener("resize", updateScrollHint);
     };
-  }, [details.length, canShowAddAccount, availableTypes.size]);
+  }, [details.length, canShowAddAccount]);
 
   const openCreateAccount = (type?: AccountType) => {
     setCreateAccountType(type);
@@ -132,7 +123,7 @@ export default function AccountSummary() {
   return (
     <>
       <section
-        className="min-w-0 space-y-4"
+        className={`min-w-0 xl:h-full ${className}`}
         aria-label="Account summary"
       >
         {transactionQuery.isError && (
@@ -151,34 +142,17 @@ export default function AccountSummary() {
           </div>
         )}
 
-        <div className="flex min-w-0 w-full flex-col gap-4 sm:flex-row">
-          <div className="w-full sm:w-[280px] sm:flex-shrink-0">
-            <SummaryCard
-              title="Net Worth"
-              value={getSummaryValue("NET_WORTH", summary, details)}
-              isPrimary
-              comparison={netWorthComparison}
-              periodLabel={periodWindow.label}
-              comparisonLoading={comparisonLoading}
-              comparisonUnavailable={comparisonUnavailable}
-              netWorthBreakdown={netWorthBreakdown}
-            />
-          </div>
-
-          <div className="relative min-w-0 flex-1 overflow-hidden">
+        <div className="relative min-w-0 xl:h-full">
             <div
               ref={accountListRef}
               aria-label="Account type balances"
               role="region"
               tabIndex={0}
-              className="flex w-full flex-nowrap snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pb-2 scrollbar-hide focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
+              className="scrollbar-hide flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400 xl:h-full"
             >
               {ACCOUNT_TYPES.filter((type) => availableTypes.has(type)).map(
                 (type) => (
-                  <div
-                    key={type}
-                    className="w-[250px] flex-shrink-0 snap-start"
-                  >
+                  <div key={type} className="w-[180px] flex-shrink-0 snap-start xl:h-full">
                     <SummaryCard
                       title={ACCOUNT_TYPE_LABELS[type]}
                       value={getSummaryValue(type, summary, details)}
@@ -207,35 +181,31 @@ export default function AccountSummary() {
                 <button
                   type="button"
                   onClick={() => openCreateAccount()}
-                  className="flex min-h-[150px] w-[250px] flex-shrink-0 snap-start flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-yellow-400/40 bg-gradient-to-br from-[#0b1220] to-[#020617] p-4 text-slate-300 transition hover:border-yellow-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
+                  className="flex min-h-[212px] w-[180px] flex-shrink-0 snap-start flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-yellow-400/40 bg-gradient-to-br from-[#0b1220] to-[#020617] p-3 text-slate-300 transition hover:border-yellow-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
                 >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/40 text-yellow-400">
-                    <Plus size={24} />
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-yellow-400/40 text-yellow-400">
+                    <Plus size={20} />
                   </span>
-                  <span className="text-sm font-medium">Add an account</span>
-                  <span className="text-xs text-slate-500">
-                    Bank, cash, card, loan, investment or friend
-                  </span>
+                  <span className="text-center text-sm font-medium">Add an account</span>
                 </button>
               )}
             </div>
-
-            {hasMoreAccounts && (
-              <button
-                type="button"
-                aria-label="Scroll to more account types"
-                onClick={() =>
-                  accountListRef.current?.scrollBy({
-                    left: 266,
-                    behavior: "smooth",
-                  })
-                }
-                className="absolute right-1 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-slate-200 shadow-lg transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
-              >
-                <ChevronRight size={20} />
-              </button>
-            )}
-          </div>
+          {hasMoreAccounts && (
+            <button
+              type="button"
+              aria-label="Scroll to more account types"
+              title="Scroll to more account types"
+              onClick={() =>
+                accountListRef.current?.scrollBy({
+                  left: 190,
+                  behavior: "smooth",
+                })
+              }
+              className="absolute right-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-slate-200 shadow-lg transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
+            >
+              <ChevronRight size={18} />
+            </button>
+          )}
         </div>
 
         {(isPending || errorMessage) && (
@@ -278,18 +248,11 @@ type AccountSummaryValues = NonNullable<
 >;
 
 function getSummaryValue(
-  type: AccountType | "NET_WORTH",
+  type: AccountType,
   summary: AccountSummaryValues | null | undefined,
   accounts: AccountDetails[]
 ): number | null {
   if (accounts.length > 0) {
-    if (type === "NET_WORTH") {
-      return accounts.reduce(
-        (total, account) => total + getNetWorthContribution(account),
-        0
-      );
-    }
-
     return accounts
       .filter((account) => account.type === type)
       .reduce(
@@ -302,9 +265,6 @@ function getSummaryValue(
 
   let value: number | null | undefined;
   switch (type) {
-    case "NET_WORTH":
-      value = summary.netWorth;
-      break;
     case "BANK":
       value = summary.totalBankBalance;
       break;
@@ -328,21 +288,6 @@ function getSummaryValue(
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-function getNetWorthContribution(account: AccountDetails) {
-  switch (account.type) {
-    case "CREDIT_CARD":
-    case "LOAN":
-      return -getAccountTypeValue(account, account.type);
-    case "BANK":
-    case "CASH":
-    case "FRIEND":
-    case "INVESTMENT":
-      return getAccountTypeValue(account, account.type);
-    default:
-      return 0;
-  }
-}
-
 function getAccountTypeValue(account: AccountDetails, type: AccountType) {
   if (type === "CREDIT_CARD") {
     return finiteAmount(
@@ -364,12 +309,10 @@ function finiteAmount(value: number | null | undefined) {
 type SummaryCardProps = {
   title: string;
   value: number | null;
-  isPrimary?: boolean;
   comparison?: BalanceComparison | null;
   periodLabel?: string;
   comparisonLoading?: boolean;
   comparisonUnavailable?: boolean;
-  netWorthBreakdown?: ReturnType<typeof getNetWorthBreakdown> | null;
   href?: string;
   onAddAccount?: () => void;
   addAccountLabel?: string;
@@ -378,12 +321,10 @@ type SummaryCardProps = {
 function SummaryCard({
   title,
   value,
-  isPrimary = false,
   comparison = null,
   periodLabel = "Period",
   comparisonLoading = false,
   comparisonUnavailable = false,
-  netWorthBreakdown = null,
   href,
   onAddAccount,
   addAccountLabel,
@@ -430,23 +371,17 @@ function SummaryCard({
       : "—";
 
   const content = (
-    <div
-      className={`min-h-[150px] rounded-2xl border p-5 transition ${
-        isPrimary
-          ? "border-yellow-400/20 bg-gradient-to-br from-[#0b1220] to-[#020617] shadow-lg"
-          : "border-white/10 bg-[#0b1220] shadow-sm"
-      }`}
-    >
+    <div className="h-full min-h-[212px] min-w-0 rounded-xl border border-white/10 bg-[#0b1220] p-3 shadow-sm transition">
       <div
         className={`flex items-start justify-between gap-3 ${
           onAddAccount ? "pr-8" : ""
         }`}
       >
-        <div>
-          <h2 className="text-sm font-medium text-slate-300">{title}</h2>
-          <p className="mt-1 text-xs text-slate-500">
-            {isPrimary ? "Total across all accounts" : "Current balance"}
-          </p>
+        <div className="min-w-0">
+          <h2 className="truncate text-sm font-semibold text-slate-200">
+            {title}
+          </h2>
+          <p className="mt-1 text-[11px] text-slate-500">Close bal</p>
         </div>
         {href && (
           <ChevronRight
@@ -456,30 +391,24 @@ function SummaryCard({
           />
         )}
       </div>
-      <p
-        className={`mt-5 text-2xl font-bold ${
-          isPrimary ? "text-yellow-300" : "text-white"
-        }`}
-      >
+      <p className="mt-2 text-xl font-bold leading-tight text-white">
         {formattedValue}
       </p>
       {value === null && (
-        <p className="mt-1 text-xs text-slate-500">
-          {isPrimary ? "Net worth unavailable" : "Balance unavailable"}
-        </p>
+        <p className="mt-1 text-[11px] text-slate-500">Balance unavailable</p>
       )}
       <PeriodBalanceDetails
         comparison={comparison}
         periodLabel={periodLabel}
         loading={comparisonLoading}
         unavailable={comparisonUnavailable}
+        compact
       />
-      {isPrimary && <NetWorthBreakdownBar breakdown={netWorthBreakdown} />}
     </div>
   );
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full min-w-0">
       {href ? (
         <Link
           href={href}

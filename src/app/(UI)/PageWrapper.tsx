@@ -1,22 +1,22 @@
 import AccountSummary from "@/components/Account/AccountSummary";
-import HomeDashboard from "@/components/DashBoard/HomeDashboard";
+import NetWorthStatusCard from "@/components/Account/NetWorthStatusCard";
+import HomeDashboard, { CategoryActivityCard } from "@/components/DashBoard/HomeDashboard";
 import HomePageTQ from "@/DataPreFetch/HomePageTQ";
 
 export default function PageWrapper() {
   return (
     <HomePageTQ>
-      <div className="space-y-6 pb-10">
-        <header className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-sm font-medium text-yellow-400">Personal finance</p>
-            <h1 className="mt-1 text-3xl font-bold text-white">Dashboard</h1>
-            <p className="mt-1 text-sm text-slate-400">
-              Your balances, latest activity, and category spending in one place.
-            </p>
-          </div>
-        </header>
-        <AccountSummary />
-        <HomeDashboard />
+      <div className="space-y-3 pb-3 xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(0,4fr)_minmax(0,11fr)_minmax(0,5fr)] xl:grid-rows-[auto_minmax(0,1fr)] xl:gap-3 xl:space-y-0 xl:pb-0">
+        <div className="xl:col-span-1">
+          <NetWorthStatusCard />
+        </div>
+        <AccountSummary className="xl:col-span-1" />
+        <div className="xl:col-span-1">
+          <CategoryActivityCard />
+        </div>
+        <div className="xl:col-span-3 xl:min-h-0">
+          <HomeDashboard />
+        </div>
       </div>
     </HomePageTQ>
   );

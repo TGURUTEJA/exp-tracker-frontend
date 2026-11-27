@@ -23,6 +23,7 @@ import CreateAccountModal from "./CreateAccountModal";
 import { AccountTypeView } from "./AccountTypeViews";
 import { useDashboardFilters } from "@/context/DashboardFiltersContext";
 import { getPeriodWindow } from "./periodBalance";
+import PageHeader from "@/components/UI/PageHeader";
 
 const TYPE_PRESENTATION: Record<
   AccountType,
@@ -92,31 +93,34 @@ export default function AccountTypeDashboard({ type }: AccountTypeDashboardProps
       : null;
 
   return (
-    <section className="mx-auto w-full max-w-6xl space-y-6 text-white">
+    <section className="mx-auto w-full max-w-[1600px] space-y-3 text-white">
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-sm text-slate-300 transition hover:text-white"
+        className="inline-flex items-center gap-1.5 text-xs text-slate-300 transition hover:text-white"
       >
-        <ArrowLeft size={16} />
-        Back to overview
+        <ArrowLeft size={14} />
+        Overview
       </Link>
 
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-yellow-400/20 bg-yellow-400/10 text-yellow-300">
-          <Icon size={24} />
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-yellow-400/20 bg-yellow-400/10 text-yellow-300">
+          <Icon size={18} />
         </span>
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold">{presentation.title}</h1>
-          <p className="mt-1 text-sm text-slate-400">{presentation.description}</p>
+        <div className="min-w-0 flex-1">
+          <PageHeader
+            title={presentation.title}
+            actions={
+              <button
+                type="button"
+                onClick={() => setCreateModalOpen(true)}
+                className="rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-semibold text-slate-900 transition hover:bg-yellow-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+              >
+                Add account
+              </button>
+            }
+          />
         </div>
-        <button
-          type="button"
-          onClick={() => setCreateModalOpen(true)}
-          className="w-full rounded-lg bg-yellow-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-yellow-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:ml-auto sm:w-auto sm:shrink-0"
-        >
-          Add account
-        </button>
-      </header>
+      </div>
 
       {isPending && (
         <p role="status" className="text-sm text-slate-400">

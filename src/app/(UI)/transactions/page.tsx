@@ -14,6 +14,7 @@ import type {
   TransactionRecord,
 } from "@/types/TransactionTypes";
 import type { AccountDetails } from "@/types/AccountTyes";
+import PageHeader from "@/components/UI/PageHeader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDownLeft, ArrowUpRight, Pencil, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
@@ -174,22 +175,18 @@ export default function TransactionsPage() {
         "Uncategorized";
 
   return (
-    <div className="space-y-6 pb-12">
-      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-medium text-yellow-400">Money activity</p>
-          <h1 className="mt-1 text-3xl font-bold text-white">Transactions</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Track income and expenses. Each saved transaction updates its account balance.
-          </p>
-        </div>
-        <Link
-          href="/categories"
-          className="text-sm font-semibold text-yellow-300 underline-offset-4 hover:underline"
-        >
-          Manage categories
-        </Link>
-      </header>
+    <div className="space-y-3 pb-3">
+      <PageHeader
+        title="Transactions"
+        actions={
+          <Link
+            href="/categories"
+            className="text-xs font-semibold text-yellow-300 underline-offset-4 hover:underline"
+          >
+            Manage categories
+          </Link>
+        }
+      />
 
       {(errorMessage || successMessage) && (
         <div
@@ -216,13 +213,12 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <section className="min-w-0 space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-[#0b1220] p-4 sm:p-5">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <section className="min-w-0 space-y-3">
+          <div className="rounded-xl border border-white/10 bg-[#0b1220] p-3">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h2 className="text-lg font-semibold text-white">Activity</h2>
-                <p className="text-xs text-slate-400">Filter by date, account, or category.</p>
+                <h2 className="text-base font-semibold text-white">Activity</h2>
               </div>
               <button
                 type="button"
@@ -290,25 +286,25 @@ export default function TransactionsPage() {
           </div>
 
           {transactionQuery.isPending ? (
-            <div role="status" className="rounded-2xl border border-white/10 bg-[#0b1220] p-8 text-center text-sm text-slate-400">
+            <div role="status" className="rounded-xl border border-white/10 bg-[#0b1220] p-5 text-center text-sm text-slate-400">
               Loading transactions…
             </div>
           ) : transactionQuery.isError ? (
-            <div role="alert" className="flex items-center justify-between gap-4 rounded-2xl border border-red-500/20 bg-red-950/30 p-5 text-sm text-red-200">
+            <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-red-500/20 bg-red-950/30 p-5 text-sm text-red-200">
               <span>{transactionQuery.error.message || "Could not load transactions."}</span>
               <button type="button" onClick={() => void transactionQuery.refetch()} className="font-semibold underline">
                 Retry
               </button>
             </div>
           ) : transactions.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1220] p-10 text-center">
+            <div className="rounded-xl border border-dashed border-white/15 bg-[#0b1220] p-6 text-center">
               <p className="font-medium text-white">No transactions found</p>
               <p className="mt-1 text-sm text-slate-400">
                 Add your first transaction or adjust the selected filters.
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220]">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1220]">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px] text-left text-sm">
                   <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
@@ -330,7 +326,7 @@ export default function TransactionsPage() {
                         : transaction.debitCredit.toLowerCase() === "credit";
                       return (
                         <tr key={transaction.id} className="text-slate-300">
-                          <td className="px-4 py-4">
+                          <td className="px-3 py-2.5">
                             <div className="font-medium text-white">
                               {transaction.description || (increasesNetWorth ? "Balance increased" : "Balance decreased")}
                             </div>
@@ -338,15 +334,15 @@ export default function TransactionsPage() {
                               {formatTransactionDate(transaction.created)}
                             </div>
                           </td>
-                          <td className="px-4 py-4">{accountName(transaction.accountId)}</td>
-                          <td className="px-4 py-4">{categoryName(transaction.categoryId)}</td>
-                          <td className={`px-4 py-4 text-right font-semibold ${increasesNetWorth ? "text-emerald-300" : "text-slate-200"}`}>
+                          <td className="px-3 py-2.5">{accountName(transaction.accountId)}</td>
+                          <td className="px-3 py-2.5">{categoryName(transaction.categoryId)}</td>
+                          <td className={`px-3 py-2.5 text-right font-semibold ${increasesNetWorth ? "text-emerald-300" : "text-slate-200"}`}>
                             <span className="inline-flex items-center justify-end gap-1">
                               {increasesNetWorth ? <ArrowDownLeft size={15} /> : <ArrowUpRight size={15} />}
                               {increasesNetWorth ? "+" : "−"}{formatCurrency(transaction.amount)}
                             </span>
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-3 py-2.5">
                             <div className="flex justify-end gap-2">
                               <button
                                 type="button"
@@ -376,8 +372,8 @@ export default function TransactionsPage() {
           )}
         </section>
 
-        <section className="h-fit rounded-2xl border border-white/10 bg-[#0b1220] p-5">
-          <div className="mb-5 flex items-center gap-2">
+        <section className="h-fit rounded-xl border border-white/10 bg-[#0b1220] p-4">
+          <div className="mb-3 flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-400/10 text-yellow-300">
               {editingId ? <Pencil size={18} /> : <Plus size={19} />}
             </span>
@@ -385,7 +381,7 @@ export default function TransactionsPage() {
               <h2 className="font-semibold text-white">
                 {editingId ? "Edit transaction" : "Add transaction"}
               </h2>
-              <p className="text-xs text-slate-400">Amounts must be positive.</p>
+              <p className="text-xs text-slate-500">Amounts must be positive.</p>
             </div>
           </div>
 
@@ -400,7 +396,7 @@ export default function TransactionsPage() {
             </div>
           ) : null}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <label className="block text-xs text-slate-400">
               Account
               <select
