@@ -1,24 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Expense Tracker Frontend
+
+Next.js, React, and TypeScript UI for the Expense Tracker. The shared UI shell and dashboard filters live under `src/app/(UI)/`, `src/components/NavBar/`, and `src/components/TopBar/`. Account summary, type dashboards, and forms live under `src/components/Account/`.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies if needed, then run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3030](http://localhost:3030) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Frontend actions in `src/app/actions.ts` call the app-service; coordinate API changes with that service and the DB GraphQL contract.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Workspace notes
+
+- [Project map](../project-structure.md) — service ownership and important paths.
+- [Account feature notes](../account-change.md) — current account behavior and design decisions.
+- [Workspace change log](../change-log.md) — dated reasons and validation for changes.
 
 ## Learn More
 

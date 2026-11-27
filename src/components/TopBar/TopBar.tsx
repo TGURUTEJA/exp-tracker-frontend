@@ -43,7 +43,7 @@ export default function TopBar() {
   } = useDashboardFilters();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-700/80 bg-slate-900/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 w-full shrink-0 border-b border-slate-700/80 bg-slate-900/95 backdrop-blur-sm">
       <div className="flex min-w-0 flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
           <span className="hidden text-xs font-medium uppercase tracking-wide text-slate-500 sm:inline">

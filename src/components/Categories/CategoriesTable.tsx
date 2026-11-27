@@ -11,14 +11,24 @@ interface CategoriesTableProps {
 }
 
 export default function CategoriesTable({ onEdit, onDelete }: CategoriesTableProps) {
-  const { data: response, isPending, isError } = useQuery<GetCategoriesResponse>({
+  const {
+    data: response,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useQuery<GetCategoriesResponse>({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
 
   if (isPending) {
     return (
-      <div className="mt-8 flex justify-center items-center p-8 bg-slate-800 rounded-2xl border border-slate-700">
+      <div
+        role="status"
+        aria-live="polite"
+        className="mt-8 flex items-center justify-center rounded-2xl border border-slate-700 bg-slate-800 p-8"
+      >
         <div className="text-slate-400 animate-pulse font-medium">Loading categories...</div>
       </div>
     );
@@ -26,8 +36,22 @@ export default function CategoriesTable({ onEdit, onDelete }: CategoriesTablePro
 
   if (isError || !response || response.error) {
     return (
-      <div className="mt-8 p-6 bg-red-950/30 border border-red-500/20 text-red-400 rounded-2xl text-center">
-        Failed to load categories
+      <div
+        role="alert"
+        className="mt-8 flex items-center justify-between gap-4 rounded-2xl border border-red-500/20 bg-red-950/30 p-6 text-red-300"
+      >
+        <span>
+          {isError
+            ? error?.message || "Failed to load categories"
+            : response?.message || "Failed to load categories"}
+        </span>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="shrink-0 font-semibold underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-300"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -47,13 +71,13 @@ export default function CategoriesTable({ onEdit, onDelete }: CategoriesTablePro
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table aria-label="All categories" className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-slate-900/50 text-slate-400 text-xs font-semibold uppercase tracking-wider">
-                <th className="px-6 py-4">ID</th>
-                <th className="px-6 py-4">Category Name</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th scope="col" className="px-6 py-4">ID</th>
+                <th scope="col" className="px-6 py-4">Category Name</th>
+                <th scope="col" className="px-6 py-4">Type</th>
+                <th scope="col" className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/50 text-sm text-slate-300">
@@ -80,16 +104,18 @@ export default function CategoriesTable({ onEdit, onDelete }: CategoriesTablePro
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-3">
                       <button
+                        type="button"
                         onClick={() => onEdit(category)}
-                        className="p-1.5 text-slate-400 hover:text-yellow-400 hover:bg-slate-700/50 rounded-lg transition-all"
-                        title="Edit Category"
+                        aria-label={`Edit ${category.name}`}
+                        className="rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-700/50 hover:text-yellow-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button
+                        type="button"
                         onClick={() => onDelete(category)}
-                        className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-700/50 rounded-lg transition-all"
-                        title="Delete Category"
+                        aria-label={`Delete ${category.name}`}
+                        className="rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-700/50 hover:text-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-400"
                       >
                         <Trash2 size={16} />
                       </button>

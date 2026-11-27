@@ -1,4 +1,4 @@
-import { getAccountdata } from "@/app/actions";
+import { getAccountdata, getCategories, getTransactions } from "@/app/actions";
 import { getQueryClient } from "@/provider/GetQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
@@ -15,8 +15,19 @@ export default async function HomePageTQ({ children }: Props) {
             queryFn:  () => getAccountdata(),// disable automatic query on mount
           })
     );
+    PromiseList.push(
+      queryClient.prefetchQuery({
+        queryKey: ["transactions", "all"],
+        queryFn: () => getTransactions(),
+      })
+    );
+    PromiseList.push(
+      queryClient.prefetchQuery({
+        queryKey: ["categories"],
+        queryFn: () => getCategories(),
+      })
+    );
     await Promise.all(PromiseList);
-    console.log(queryClient);
   
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>{children}</HydrationBoundary>

@@ -166,10 +166,9 @@ export default function CreateCategotiesModel({ open, setOpen, onSuccess, catego
                 onChange={(e) => setType(e.target.value)}
                 className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
               >
+                <option value="INCOME">INCOME</option>
                 <option value="NEED">NEED</option>
                 <option value="WANT">WANT</option>
-                <option value="SAVINGS">SAVINGS</option>
-                <option value="INVESTMENT">INVESTMENT</option>
               </select>
             </div>
 

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Plus, AlertCircle, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import AccountSummary from "@/components/Account/AccountSummary";
 import CreateCategotiesModel from "@/components/Categories/CreateCategotiesModel";
 import CategoriesTable from "@/components/Categories/CategoriesTable";
 import DeleteConfirmationModal from "@/components/Categories/DeleteConfirmationModal";
@@ -56,7 +55,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="relative min-h-screen pb-20 px-6 max-w-7xl mx-auto">
+    <div className="relative w-full pb-20">
       {/* FLOATING ERROR TOAST */}
       {errorMsg && (
         <div className="fixed top-5 right-5 z-[1000] flex items-center gap-3 bg-red-950/90 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md animate-slideInLeft max-w-sm">
@@ -64,6 +63,7 @@ export default function CategoriesPage() {
           <div className="flex-1 text-sm font-medium">{errorMsg}</div>
           <button 
             type="button"
+            aria-label="Dismiss error"
             onClick={() => setErrorMsg(null)}
             className="text-red-400 hover:text-red-200 transition-colors"
           >
@@ -72,7 +72,12 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      <AccountSummary />
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Categories</h1>
+        <p className="mt-1 text-sm text-slate-400">
+          Organize spending into categories that make sense to you.
+        </p>
+      </header>
       
       {/* CATEGORIES TABLE */}
       <CategoriesTable 
@@ -82,6 +87,7 @@ export default function CategoriesPage() {
       
       {/* FLOATING ACTION BUTTON */}
       <button
+        type="button"
         onClick={() => {
           setCategoryToEdit(null);
           setIsModalOpen(true);
