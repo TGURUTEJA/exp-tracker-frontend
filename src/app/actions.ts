@@ -19,9 +19,34 @@ import type {
 import { customApiCall } from "./service";
 
 export async function getUserData() {
-  return customApiCall<UserDetailsResponse>("/api/App/user/Details", "GET", {
+  const response = await customApiCall<unknown>("/api/App/user/Details", "GET", {
     withCredentials: true,
   });
+  if (!isUserDetailsResponse(response)) {
+    throw new Error("Invalid user profile response");
+  }
+  return response;
+}
+
+export interface UserProfileUpdate {
+  firstName: string;
+  lastName: string;
+  dob: string;
+}
+
+export async function updateUserData(body: UserProfileUpdate) {
+  const response = await customApiCall<unknown>(
+    "/api/App/user/Details",
+    "PUT",
+    { body, withCredentials: true }
+  );
+  if (!isUserDetailsResponse(response)) {
+    throw new Error("Invalid user profile response");
+  }
+  if (response.error || !response.data) {
+    throw new Error(response.message || "Could not save your profile");
+  }
+  return response;
 }
 
 export async function getAccountdata() {
@@ -206,6 +231,32 @@ function isAccountTransaction(value: unknown): value is AccountTransaction {
 
 function isNullableNumber(value: unknown): value is number | null {
   return value === null || (typeof value === "number" && Number.isFinite(value));
+}
+
+function isUserDetailsResponse(value: unknown): value is UserDetailsResponse {
+  if (typeof value !== "object" || value === null) return false;
+  const response = value as Record<string, unknown>;
+  if (
+    typeof response.error !== "boolean" ||
+    (response.message !== null && typeof response.message !== "string")
+  ) {
+    return false;
+  }
+  if (response.data === null) return true;
+  if (typeof response.data !== "object") return false;
+
+  const user = response.data as Record<string, unknown>;
+  return (
+    (user.id === null || typeof user.id === "string" || typeof user.id === "number") &&
+    isNullableString(user.firstName) &&
+    isNullableString(user.lastName) &&
+    isNullableString(user.dob) &&
+    (user.email === undefined || isNullableString(user.email))
+  );
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
 }
 
 

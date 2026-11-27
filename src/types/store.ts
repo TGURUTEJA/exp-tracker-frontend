@@ -7,17 +7,17 @@ export type StoreState = {
 };
 
 export interface UserData {
-    id: number | null;
-    firstName: string;
-    lastName: string;
-    dob: string;
-    email: string;
+    id: string | number | null;
+    firstName: string | null;
+    lastName: string | null;
+    dob: string | null;
+    email?: string | null;
 }
 
 /** App API wrapper for `/api/App/user/Details`. */
 export interface UserDetailsResponse {
-    data: UserData;
-    message: string;
+    data: UserData | null;
+    message: string | null;
     error: boolean;
 }
 

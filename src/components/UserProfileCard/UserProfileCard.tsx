@@ -1,35 +1,18 @@
 'use client';
 
 import { getUserData } from "@/app/actions";
-import { UserData } from "@/types/store";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 export default function ProfileCard() {
-    let UserResponse : UserData = {
-    id: null,
-    firstName: '',
-    lastName: '',
-    dob: '',
-    email: ''
-  };
-    const {data,isPending,isError} =  useQuery({
+    const {data,isPending,isError} = useQuery({
     queryKey: ['dashboard'],
-    queryFn:  () => getUserData(),// disable automatic query on mount
+    queryFn: () => getUserData(),
   });
-  if(isPending){
-    UserResponse = {
-      id: null,
-      firstName: 'Loading...',
-        lastName: 'Loading...',
-        dob: 'Loading...',
-        email: 'Loading...'
-    };
-  }
-  if(!isPending && !isError){
-      UserResponse = data.data;
-      // UserResponse.email = "Test@gami1l.com"
-  }
+  const user = !isPending && !isError ? data?.data : null;
+  const firstName = user?.firstName?.trim() || "";
+  const lastName = user?.lastName?.trim() || "";
+  const fullName = [firstName, lastName].filter(Boolean).join(" ");
 
   return (
     <div className="min-w-100 p-6 lg:ml-20 flex justify-center animate-fadeIn">
@@ -61,7 +44,9 @@ export default function ProfileCard() {
 
             <div>
               <p className="text-slate-300 text-lg">Hi</p>
-              <h1 className="text-white text-2xl font-semibold">{UserResponse.firstName + " "+UserResponse.lastName}</h1>
+              <h1 className="text-white text-2xl font-semibold">
+                {isPending ? "Loading..." : isError ? "Profile unavailable" : fullName || "Profile"}
+              </h1>
             </div>
           </div>
 
@@ -89,25 +74,25 @@ export default function ProfileCard() {
           {/* First Name */}
           <div className="flex flex-col">
             <label className="text-slate-400 text-sm">First Name</label>
-            <p className="text-white text-base mt-1">{UserResponse.firstName}</p>
+            <p className="text-white text-base mt-1">{firstName || "—"}</p>
           </div>
 
           {/* Second Name */}
           <div className="flex flex-col">
             <label className="text-slate-400 text-sm">Second Name</label>
-            <p className="text-white text-base mt-1">{UserResponse.lastName}</p>
+            <p className="text-white text-base mt-1">{lastName || "—"}</p>
           </div>
 
           {/* DOB */}
           <div className="flex flex-col">
             <label className="text-slate-400 text-sm">Date of Birth</label>
-            <p className="text-white text-base mt-1">{UserResponse.dob}</p>
+            <p className="text-white text-base mt-1">{user?.dob || "—"}</p>
           </div>
 
           {/* Email */}
           <div className="flex flex-col">
             <label className="text-slate-400 text-sm">Email</label>
-            <p className="text-white text-base mt-1">{UserResponse.email}</p>
+            <p className="text-white text-base mt-1">{user?.email || "Managed by your sign-in account"}</p>
           </div>
 
         </div>
