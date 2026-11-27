@@ -1,11 +1,12 @@
 "use client";
 
-import { getAccountdata, getCategories, getTransactions } from "@/app/actions";
+import { getAccountdata, getBudgets, getCategories, getTransactions } from "@/app/actions";
 import type { AccountDetails } from "@/types/AccountTyes";
+import type { BudgetRecord } from "@/types/BudgetTypes";
 import type { Category } from "@/app/actions";
 import type { TransactionRecord } from "@/types/TransactionTypes";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDownLeft, ArrowUpRight, ArrowUpRightFromSquare, Tags } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowUpRightFromSquare, Tags, Wallet } from "lucide-react";
 import Link from "next/link";
 
 export default function HomeDashboard() {
@@ -21,8 +22,13 @@ export default function HomeDashboard() {
     queryKey: ["AccountSummary"],
     queryFn: getAccountdata,
   });
+  const budgetsQuery = useQuery({
+    queryKey: ["budgets"],
+    queryFn: () => getBudgets(),
+  });
 
-  const transactions = transactionsQuery.data ?? [];
+  const transactions = Array.isArray(transactionsQuery.data) ? transactionsQuery.data : [];
+  const budgets = Array.isArray(budgetsQuery.data) ? budgetsQuery.data : [];
   const accounts = accountsQuery.data?.data?.accountDetailsList ?? [];
   const categories =
     categoriesQuery.data && !categoriesQuery.data.error
@@ -33,6 +39,7 @@ export default function HomeDashboard() {
     .filter((transaction) => isExpense(transaction, categories, accounts))
     .reduce((total, transaction) => total + transaction.amount, 0);
   const categoryActivity = getCategoryActivity(monthTransactions, categories, accounts);
+  const budgetProgress = getBudgetProgress(budgets, categories, categoryActivity);
 
   return (
     <section className="space-y-4" aria-label="Transaction and category overview">
@@ -50,6 +57,13 @@ export default function HomeDashboard() {
           >
             <ArrowUpRight size={16} />
             Add transaction
+          </Link>
+          <Link
+            href="/budgets"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/5"
+          >
+            <Wallet size={16} />
+            Budgets
           </Link>
           <Link
             href="/categories"
@@ -171,6 +185,63 @@ export default function HomeDashboard() {
           )}
         </div>
       </div>
+
+      <div className="rounded-2xl border border-white/10 bg-[#0b1220]">
+        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
+          <div>
+            <h2 className="font-semibold text-white">Budget progress</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Spending against monthly limits</p>
+          </div>
+          <Link
+            href="/budgets"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-yellow-300 hover:text-yellow-200"
+          >
+            Manage budgets <ArrowUpRightFromSquare size={13} />
+          </Link>
+        </div>
+        {budgetsQuery.isPending ? (
+          <div role="status" className="p-6 text-sm text-slate-400">Loading budgets…</div>
+        ) : budgetsQuery.isError ? (
+          <div role="alert" className="flex items-center justify-between gap-3 p-5 text-sm text-red-200">
+            <span>{budgetsQuery.error.message || "Could not load budgets."}</span>
+            <button type="button" onClick={() => void budgetsQuery.refetch()} className="font-semibold underline">Retry</button>
+          </div>
+        ) : budgetProgress.length === 0 ? (
+          <div className="p-6">
+            <p className="text-sm font-medium text-white">No budgets for this month</p>
+            <p className="mt-1 text-sm text-slate-400">
+              Set a monthly limit per category to see progress here.
+            </p>
+            <Link href="/budgets" className="mt-3 inline-block text-sm font-semibold text-yellow-300 hover:underline">
+              Create your first budget
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4 p-5">
+            {budgetProgress.map((item) => (
+              <div key={item.id}>
+                <div className="mb-1.5 flex items-center justify-between gap-2 text-sm">
+                  <span className="truncate text-slate-300">{item.name}</span>
+                  <span className={`shrink-0 font-medium ${item.over ? "text-red-300" : "text-white"}`}>
+                    {formatCurrency(item.spent)} / {formatCurrency(item.limit)}
+                  </span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
+                  <div
+                    className={`h-full rounded-full ${item.over ? "bg-red-400" : "bg-yellow-400"}`}
+                    style={{ width: `${item.percent}%` }}
+                  />
+                </div>
+                <p className={`mt-1 text-xs ${item.over ? "text-red-300" : "text-slate-500"}`}>
+                  {item.over
+                    ? `Over budget by ${formatCurrency(item.spent - item.limit)}`
+                    : `${formatCurrency(Math.max(item.limit - item.spent, 0))} left`}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -230,6 +301,54 @@ function getCategoryActivity(
       ? "Uncategorized"
       : categories.find((category) => Number(category.id) === id)?.name ?? "Category",
   })).sort((left, right) => right.amount - left.amount);
+}
+
+function getBudgetProgress(
+  budgets: BudgetRecord[],
+  categories: Category[],
+  categoryActivity: { id: number; amount: number; name: string }[]
+): BudgetProgressItem[] {
+  const now = new Date();
+  return budgets
+    .filter(
+      (budget) =>
+        budget.isActive !== false &&
+        budget.year === now.getFullYear() &&
+        budget.month === now.getMonth() + 1
+    )
+    .map((budget) => {
+      const activity = categoryActivity.find(
+        (item) => item.id === budget.categoryId
+      );
+      const spent = activity?.amount ?? 0;
+      const limit = budget.amount;
+      return {
+        id: budget.id,
+        name:
+          activity?.name ??
+          categories.find((category) => Number(category.id) === budget.categoryId)
+            ?.name ??
+          `Category #${budget.categoryId}`,
+        spent,
+        limit,
+        percent: limit > 0 ? Math.min((spent / limit) * 100, 100) : 0,
+        over: spent > limit,
+      };
+    })
+    .sort((left, right) => usage(right) - usage(left));
+}
+
+function usage(item: { spent: number; limit: number }) {
+  return item.limit > 0 ? item.spent / item.limit : 0;
+}
+
+interface BudgetProgressItem {
+  id: string;
+  name: string;
+  spent: number;
+  limit: number;
+  percent: number;
+  over: boolean;
 }
 
 function isExpense(

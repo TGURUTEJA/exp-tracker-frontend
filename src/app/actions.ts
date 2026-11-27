@@ -5,6 +5,11 @@ import type {
 } from "@/types/AccountTyes";
 import type { UserDetailsResponse } from "@/types/store";
 import type {
+  BudgetPayload,
+  BudgetRecord,
+  BudgetResponse,
+} from "@/types/BudgetTypes";
+import type {
   AccountTransaction,
   TransactionFilters,
   TransactionPayload,
@@ -50,9 +55,13 @@ export async function getTransactions(filters: TransactionFilters = {}) {
   if (filters.accountId !== undefined) search.set("accountId", String(filters.accountId));
   if (filters.categoryId !== undefined) search.set("categoryId", String(filters.categoryId));
   const query = search.size > 0 ? `?${search.toString()}` : "";
-  return customApiCall<TransactionRecord[]>(`/api/App/transaction${query}`, "GET", {
+  const response = await customApiCall<unknown>(`/api/App/transaction${query}`, "GET", {
     withCredentials: true,
   });
+  if (!Array.isArray(response)) {
+    throw new Error("Invalid transactions response");
+  }
+  return response as TransactionRecord[];
 }
 
 export async function createTransaction(body: TransactionPayload) {
@@ -74,6 +83,46 @@ export async function updateTransaction(id: number, body: TransactionPayload) {
 export async function deleteTransaction(id: number) {
   return customApiCall<TransactionResponse<boolean>>(
     `/api/App/transaction/${id}`,
+    "DELETE",
+    { withCredentials: true }
+  );
+}
+
+export async function getBudgets(year?: number, month?: number) {
+  const search = new URLSearchParams();
+  if (year !== undefined && month !== undefined) {
+    search.set("year", String(year));
+    search.set("month", String(month));
+  }
+  const query = search.size > 0 ? `?${search.toString()}` : "";
+  const response = await customApiCall<unknown>(`/api/App/budget${query}`, "GET", {
+    withCredentials: true,
+  });
+  if (!Array.isArray(response)) {
+    throw new Error("Invalid budgets response");
+  }
+  return response as BudgetRecord[];
+}
+
+export async function createBudget(body: BudgetPayload) {
+  return customApiCall<BudgetResponse<BudgetRecord>>(
+    "/api/App/budget",
+    "POST",
+    { body, withCredentials: true }
+  );
+}
+
+export async function updateBudget(id: string, body: BudgetPayload) {
+  return customApiCall<BudgetResponse<BudgetRecord>>(
+    `/api/App/budget/${id}`,
+    "PUT",
+    { body, withCredentials: true }
+  );
+}
+
+export async function deleteBudget(id: string) {
+  return customApiCall<BudgetResponse<boolean>>(
+    `/api/App/budget/${id}`,
     "DELETE",
     { withCredentials: true }
   );

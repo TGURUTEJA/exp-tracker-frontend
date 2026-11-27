@@ -1,4 +1,4 @@
-import { getAccountdata, getCategories, getTransactions } from "@/app/actions";
+import { getAccountdata, getBudgets, getCategories, getTransactions } from "@/app/actions";
 import { getQueryClient } from "@/provider/GetQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
@@ -25,6 +25,12 @@ export default async function HomePageTQ({ children }: Props) {
       queryClient.prefetchQuery({
         queryKey: ["categories"],
         queryFn: () => getCategories(),
+      })
+    );
+    PromiseList.push(
+      queryClient.prefetchQuery({
+        queryKey: ["budgets"],
+        queryFn: () => getBudgets(),
       })
     );
     await Promise.all(PromiseList);

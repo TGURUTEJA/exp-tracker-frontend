@@ -5,6 +5,7 @@ import {
   Home,
   Tags,
   ReceiptText,
+  Wallet,
   LogOut,
   Menu,
   X,
@@ -14,7 +15,7 @@ import { LogoutUser } from "@/actions/AuthActions";
 import { useState } from "react";
 import { getUserData } from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
-import { UserData } from "@/types/store";
+import { UserData, UserDetailsResponse } from "@/types/store";
 import UserModles from "../Models/UserModels";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -28,6 +29,7 @@ const NavBar = () => {
   const links = [
     { name: "Home", href: "/", icon: <Home size={18} /> },
     { name: "Transactions", href: "/transactions", icon: <ReceiptText size={18} /> },
+    { name: "Budgets", href: "/budgets", icon: <Wallet size={18} /> },
     { name: "Categories", href: "/categories", icon: <Tags size={18} /> },
   ];
 
@@ -66,8 +68,11 @@ const NavBar = () => {
     dob: "",
     email: "",
   };
-  if (!isPending && !isError && data) {
-    response = data.data;
+  if (!isPending && !isError && data && typeof data === "object" && "data" in data) {
+    const userData = (data as UserDetailsResponse).data;
+    if (userData) {
+      response = userData;
+    }
   }
 
   return (
